@@ -18,11 +18,11 @@ class SnapsProducer(dai.node.HostNode):
 
     def process(self, rgb: dai.Buffer, detections: dai.ImgDetections):
         for det in detections.detections:
-            if (det.confidence < self.confidence_threshold and self.label_map[det.label] in self.labels and time.time() > self.last_update + self.time_interval):
+            if (det.confidence >= self.confidence_threshold and self.label_map[det.label] in self.labels and time.time() > self.last_update + self.time_interval):
                 self.last_update = time.time()
                 det_xyxy = [det.xmin, det.ymin, det.xmax, det.ymax]
                 extra_data = {
-                    "model": "luxonis/yolov6-nano:r2-coco-512x288",
+                    "model": getattr(self, "model_name", "skyfood-perception"),
                     "detection_xyxy": str(det_xyxy),
                     "detection_label": str(det.label),
                     "detection_label_str": self.label_map[det.label],

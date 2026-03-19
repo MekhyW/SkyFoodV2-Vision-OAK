@@ -1,5 +1,5 @@
-identifier = "custom.oakapp"
-app_version = "1.0.0"
+identifier = "skyfood.oak.perception"
+app_version = "2.0.0"
 
 prepare_container = [
     { type = "RUN", command = "apt-get update" },
@@ -8,6 +8,12 @@ prepare_container = [
 
 prepare_build_container = []
 
-build_steps = ["pip3 install -r /app/requirements.txt --break-system-packages"]
+build_steps = [
+    "pip3 install depthai opencv-python numpy --break-system-packages",
+    "pip3 install git+https://github.com/luxonis/depthai-nodes.git@main#egg=depthai-nodes --break-system-packages",
+]
 
+# On the Jetson: source ROS 2, then run:
+#   python3 /app/main.py --ip <OAK_IP>
+# The entrypoint below assumes ROS 2 is pre-sourced in the environment.
 entrypoint = ["bash", "-c", "python3 /app/main.py"]
