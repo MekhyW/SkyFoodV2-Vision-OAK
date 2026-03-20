@@ -22,15 +22,9 @@ Standalone perception pipeline for the **SkyFoodV2 delivery robot** using a **Lu
 ## Software Requirements
 
 ```bash
-# 1. Install ROS 2 Humble (follow official guide) and source it
+# Install ROS 2 Humble (follow official guide) and source it
 source /opt/ros/humble/setup.bash
-
-# 2. Install ROS 2 vision_msgs package
 sudo apt install ros-humble-vision-msgs
-
-# 3. Install Python dependencies
-pip install depthai opencv-python numpy
-pip install git+https://github.com/luxonis/depthai-nodes.git@main#egg=depthai-nodes
 ```
 
 > **Note:** `rclpy` is a system package installed with ROS 2 — do not install it via pip.
@@ -85,39 +79,7 @@ cd SkyFoodV2-Vision-OAK
 pip install -r requirements.txt
 ```
 
-## Model Files
-
-All model `.blob` files must be placed in the `models/` directory.
-
-### Downloading Pre-trained Models
-
-#### YOLOv6-nano (Human Detection)
-
-1. Visit the [Luxonis Model Zoo](https://elinux.org/Luxonis_modelzoo) or use the DepthAI API:
-
-```python
-import depthai as dai
-desc = dai.NNModelDescription("luxonis/yolov6-nano:r2-coco-512x288")
-desc.platform = "RVC4"
-archive = dai.NNArchive(dai.getModelFromZoo(desc))
-```
-
-2. Or download the blob manually from Luxonis and rename it:
-
-```
-models/yolov6n_coco_512x288.blob
-```
-
-#### YuNet (Face Detection)
-
-1. Download from the [Luxonis Model Zoo](https://docs.luxonis.com/projects/sdk/en/latest/features/model_zoo/) — search for "YuNet".
-2. Place it at:
-
-```
-models/yunet_face.blob
-```
-
-### Training the Custom Dock Detector
+## Training the Custom Dock Detector
 
 The charging dock model requires custom training. Follow these steps:
 

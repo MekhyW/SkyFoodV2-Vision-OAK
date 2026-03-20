@@ -1,0 +1,46 @@
+{
+    "cmd_info": {
+        "dlc_convert": [
+            "snpe-onnx-to-dlc",
+            "-i",
+            "shared_with_container/outputs/yolov6n-r2-288x512_to_rvc4_2024_07_24_09_23_46/intermediate_outputs/yolov6n-r2-288x512-modified.onnx",
+            "--input_dim",
+            "images",
+            "1,3,288,512",
+            "--input_dtype",
+            "images",
+            "float32",
+            "--out_name",
+            "output1_yolov6r2",
+            "--out_name",
+            "output2_yolov6r2",
+            "--out_name",
+            "output3_yolov6r2"
+        ],
+        "quantization_cmd": [
+            "snpe-dlc-quant",
+            "--input_list",
+            "shared_with_container/outputs/yolov6n-r2-288x512_to_rvc4_2024_07_24_09_23_46/intermediate_outputs/img_list.txt",
+            "--input_dlc",
+            "shared_with_container/outputs/yolov6n-r2-288x512_to_rvc4_2024_07_24_09_23_46/intermediate_outputs/yolov6n-r2-288x512-modified.dlc",
+            "--output_dlc",
+            "shared_with_container/outputs/yolov6n-r2-288x512_to_rvc4_2024_07_24_09_23_46/intermediate_outputs/yolov6n-r2-288x512-modified-quantized.dlc"
+        ],
+        "graph_prepare": [
+            "snpe-dlc-graph-prepare",
+            "--input_dlc",
+            "shared_with_container/outputs/yolov6n-r2-288x512_to_rvc4_2024_07_24_09_23_46/intermediate_outputs/yolov6n-r2-288x512-modified-quantized.dlc",
+            "--output_dlc",
+            "shared_with_container/outputs/yolov6n-r2-288x512_to_rvc4_2024_07_24_09_23_46/yolov6n-r2-288x512.dlc",
+            "--set_output_tensors",
+            "output1_yolov6r2,output2_yolov6r2,output3_yolov6r2",
+            "--htp_socs",
+            "sm8550"
+        ]
+    },
+    "modelconverter_version": "0.1.2",
+    "snpe_version": "SNPE v2.23.0.240531124219_94801",
+    "target_devices": [
+        "sm8550"
+    ]
+}

@@ -17,7 +17,7 @@ IMU_RATE_HZ = 400    # Batch report frequency for accelerometer + gyroscope
 IMU_BATCH_SIZE = 1   # How many IMU packets to batch before sending to host
 
 # ── Human Detection ─────────────────────────────────────────────────
-HUMAN_MODEL_PATH   = "models/yolov6n_coco_512x288.blob"
+HUMAN_MODEL_PATH   = "models/yolov6n-r2-288x512"
 HUMAN_CONFIDENCE   = 0.5       # Detection threshold
 HUMAN_IOU_THRESHOLD = 0.4
 HUMAN_NUM_CLASSES  = 80        # COCO classes
@@ -29,13 +29,13 @@ HUMAN_INPUT_WIDTH  = 512
 HUMAN_INPUT_HEIGHT = 288
 
 # ── Face Detection ──────────────────────────────────────────────────
-FACE_MODEL_PATH    = "models/yunet_face.blob"
+FACE_MODEL_PATH    = "models/yunet-s-240x320"
 FACE_CONFIDENCE    = 0.5
 FACE_INPUT_WIDTH   = 320
 FACE_INPUT_HEIGHT  = 240
 
 # ── Dock Detection ──────────────────────────────────────────────────
-DOCK_MODEL_PATH    = "models/dock_detector.blob"   # TODO: supply after training
+DOCK_MODEL_PATH    = "models/dock_detector"
 DOCK_CONFIDENCE    = 0.6
 DOCK_INPUT_WIDTH   = 320
 DOCK_INPUT_HEIGHT  = 320
