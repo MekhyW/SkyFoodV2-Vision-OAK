@@ -79,76 +79,6 @@ cd SkyFoodV2-Vision-OAK
 pip install -r requirements.txt
 ```
 
-## Training the Custom Dock Detector
-
-The charging dock model requires custom training. Follow these steps:
-
-#### 1. Dataset Collection
-
-- Collect **300–500 images** of the charging dock in various:
-  - Lighting conditions (office fluorescent, daylight, low-light)
-  - Distances (0.3 m – 5 m)
-  - Angles (frontal, slight left/right/up/down offset)
-  - Backgrounds (varied floors, walls, clutter)
-
-#### 2. Annotation
-
-Use [Roboflow](https://roboflow.com):
-
-1. Create a new project → **Object Detection**.
-2. Upload images.
-3. Draw bounding boxes around the dock, label as `charging_dock`.
-4. Apply augmentations: flip, brightness, mosaic, crop.
-5. Export as **YOLOv7 PyTorch** format.
-
-#### 3. Model Training
-
-Use a small YOLO variant (e.g. **YOLOv7-tiny** or **YOLOv6-nano**):
-
-```bash
-# Example with YOLOv6 (Meituan repo)
-git clone https://github.com/meituan/YOLOv6
-cd YOLOv6
-pip install -r requirements.txt
-
-python tools/train.py \
-  --batch 32 \
-  --conf configs/yolov6n.py \
-  --data data/dock.yaml \
-  --epochs 100 \
-  --device 0
-```
-
-#### 4. Export to ONNX
-
-```bash
-python deploy/ONNX/export_onnx.py \
-  --weights runs/train/exp/weights/best.pt \
-  --img-size 320 320 \
-  --batch 1
-```
-
-#### 5. Convert to .blob (Luxonis blob converter)
-
-1. Go to [https://tools.luxonis.com/blob-converter/](https://tools.luxonis.com/blob-converter/).
-2. Upload `best.onnx`.
-3. Select **RVC4** platform.
-4. Set input shape to `[1, 3, 320, 320]`.
-5. Download the resulting `.blob`.
-6. Place it at:
-
-```
-models/dock_detector.blob
-```
-
-#### 6. Update config
-
-In `config.py`, update:
-```python
-DOCK_INPUT_WIDTH  = 320
-DOCK_INPUT_HEIGHT = 320
-```
-
 ## Running the Pipeline
 
 ```bash
@@ -178,7 +108,6 @@ python3 main.py --no-ros --phase 1
 | `/imu` | `sensor_msgs/Imu` | 2 | 400 |
 | `/perception/human_detections` | `vision_msgs/Detection3DArray` | 3 | ≤30 |
 | `/perception/face_detections` | `vision_msgs/Detection3DArray` | 4 | ≤30 |
-| `/perception/dock_detections` | `vision_msgs/Detection3DArray` | 4 | ≤30 |
 
 ## Hardware Verification
 
@@ -222,15 +151,14 @@ ros2 topic echo /perception/human_detections   # walk in front of camera
 
 ✅ **Pass criteria:** Detections appear within 1 s of a person entering the frame, with `bbox.center.position.z > 0`.
 
-### Phase 4 — Face + Dock Detection
+### Phase 4 — Face Detection
 
 ```bash
 python3 main.py &
 ros2 topic echo /perception/face_detections    # face in front of camera
-ros2 topic echo /perception/dock_detections    # charging dock in camera view
 ```
 
-✅ **Pass criteria:** Face detected at ≥ 2 m distance; dock detected at ≥ 1 m with `confidence > 0.6`.
+✅ **Pass criteria:** Face detected at ≥ 2 m distance.
 
 ## Software Verification (no hardware)
 

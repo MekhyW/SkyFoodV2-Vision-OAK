@@ -9,7 +9,6 @@ Topics published:
   /imu                       sensor_msgs/Imu
   /perception/human_detections  vision_msgs/Detection3DArray
   /perception/face_detections   vision_msgs/Detection3DArray
-  /perception/dock_detections   vision_msgs/Detection3DArray
 
 Prerequisites on the Jetson:
   source /opt/ros/humble/setup.bash
@@ -199,9 +198,8 @@ class PerceptionPublisher:
         if _VISION_MSGS:
             self._pub_humans = self._node.create_publisher(Detection3DArray, config.TOPIC_HUMANS, 10)
             self._pub_faces  = self._node.create_publisher(Detection3DArray, config.TOPIC_FACES, 10)
-            self._pub_dock   = self._node.create_publisher(Detection3DArray, config.TOPIC_DOCK, 10)
         else:
-            self._pub_humans = self._pub_faces = self._pub_dock = None
+            self._pub_humans = self._pub_faces = None
         self._node.get_logger().info("PerceptionPublisher initialised.")
 
     def _get(self, name: str):
@@ -219,7 +217,6 @@ class PerceptionPublisher:
             self._process_imu()
             self._process_humans()
             self._process_faces()
-            self._process_dock()
 
     def _process_color(self) -> None:
         frame: Optional[dai.ImgFrame] = self._get("color")
@@ -259,16 +256,6 @@ class PerceptionPublisher:
             return
         msg = _generic_detections_to_ros(nn_data, locations, "face", config.FRAME_COLOR, config.FACE_CONFIDENCE, config.FACE_INPUT_WIDTH, config.FACE_INPUT_HEIGHT, self._node)
         self._pub_faces.publish(msg)
-
-    def _process_dock(self) -> None:
-        if not _VISION_MSGS or "dock_det" not in self._qs:
-            return
-        nn_data: Optional[dai.NNData] = self._get("dock_det")
-        locations = self._get("dock_loc")
-        if nn_data is None or locations is None:
-            return
-        msg = _generic_detections_to_ros(nn_data, locations, "charging_dock", config.FRAME_COLOR, config.DOCK_CONFIDENCE, config.DOCK_INPUT_WIDTH, config.DOCK_INPUT_HEIGHT, self._node)
-        self._pub_dock.publish(msg)
 
     def destroy(self) -> None:
         self._node.destroy_node()

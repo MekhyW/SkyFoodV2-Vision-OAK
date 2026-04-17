@@ -34,12 +34,6 @@ FACE_CONFIDENCE    = 0.5
 FACE_INPUT_WIDTH   = 320
 FACE_INPUT_HEIGHT  = 240
 
-# ── Dock Detection ──────────────────────────────────────────────────
-DOCK_MODEL_PATH    = "models/dock_detector"
-DOCK_CONFIDENCE    = 0.6
-DOCK_INPUT_WIDTH   = 320
-DOCK_INPUT_HEIGHT  = 320
-
 # ── ROS 2 Topics ──────────────────────────────────────────────────────────────
 TOPIC_COLOR        = "/color/image_raw"
 TOPIC_DEPTH        = "/stereo/depth"
@@ -47,7 +41,6 @@ TOPIC_CAMERA_INFO  = "/camera_info"
 TOPIC_IMU          = "/imu"
 TOPIC_HUMANS       = "/perception/human_detections"
 TOPIC_FACES        = "/perception/face_detections"
-TOPIC_DOCK         = "/perception/dock_detections"
 
 # Frame IDs expected by RViz2 / Nav2
 FRAME_COLOR        = "oak_rgb_camera_optical_frame"

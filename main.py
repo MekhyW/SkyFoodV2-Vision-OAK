@@ -6,7 +6,7 @@ hands output queues to the ROS 2 publisher node.
 Phase 1: Color + Depth
 Phase 2: IMU
 Phase 3: Human (person) spatial detection
-Phase 4: Face + Charging-dock detection
+Phase 4: Face detection
 """
 
 import argparse
@@ -122,7 +122,7 @@ def build_pipeline(device: dai.Device, phase: int) -> tuple[dai.Pipeline, dict]:
     if phase < 4:
         return pipeline, queues
 
-    print("[main] Phase 4: adding face + dock detection …")
+    print("[main] Phase 4: adding face detection …")
     if not os.path.isfile(config.FACE_MODEL_PATH):
         print(f"[main] WARNING: face model blob not found at '{config.FACE_MODEL_PATH}'. Skipping face detection. Please download the blob and restart.")
     else:
@@ -150,33 +150,7 @@ def build_pipeline(device: dai.Device, phase: int) -> tuple[dai.Pipeline, dict]:
         xout_faces_loc.setStreamName("faces_loc")
         slc_faces.out.link(xout_faces_loc.input)
         queues["faces_loc"] = "faces_loc"
-    if not os.path.isfile(config.DOCK_MODEL_PATH):
-        print(f"[main] WARNING: dock model blob not found at '{config.DOCK_MODEL_PATH}'. Skipping dock detection – provide the trained blob and restart.")
-    else:
-        manip_dock = pipeline.create(dai.node.ImageManip)
-        manip_dock.initialConfig.setResize(config.DOCK_INPUT_WIDTH, config.DOCK_INPUT_HEIGHT)
-        manip_dock.initialConfig.setFrameType(dai.ImgFrame.Type.BGR888p)
-        manip_dock.setKeepAspectRatio(False)
-        cam_rgb.video.link(manip_dock.inputImage)
-        nn_dock = pipeline.create(dai.node.NeuralNetwork)
-        archive = dai.NNArchive(config.DOCK_MODEL_PATH)
-        nn_dock.setNNArchive(archive)
-        manip_dock.out.link(nn_dock.input)
-        slc_dock = pipeline.create(dai.node.SpatialLocationCalculator)
-        slc_dock.setWaitForConfigInput(False)
-        stereo.depth.link(slc_dock.inputDepth)
-        script_dock = pipeline.create(dai.node.Script)
-        script_dock.setScript(_make_slc_script(input_width=config.DOCK_INPUT_WIDTH, input_height=config.DOCK_INPUT_HEIGHT))
-        nn_dock.out.link(script_dock.inputs["nn_out"])
-        script_dock.outputs["slc_cfg"].link(slc_dock.inputConfig)
-        xout_dock_det = pipeline.create(dai.node.XLinkOut)
-        xout_dock_det.setStreamName("dock_det")
-        nn_dock.out.link(xout_dock_det.input)
-        queues["dock_det"] = "dock_det"
-        xout_dock_loc = pipeline.create(dai.node.XLinkOut)
-        xout_dock_loc.setStreamName("dock_loc")
-        slc_dock.out.link(xout_dock_loc.input)
-        queues["dock_loc"] = "dock_loc"
+
     return pipeline, queues
 
 
